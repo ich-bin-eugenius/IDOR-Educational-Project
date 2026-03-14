@@ -2,6 +2,8 @@
 
 This project is a cybersecurity educational lab consisting of a **vulnerable web application** and a **security scanning tool**. It demonstrates the risks of **Insecure Direct Object Reference (IDOR)** and how automated tools can be used for security auditing.
 
+![example](img1.png)
+
 ## 📖 Background
 I discovered a real-world IDOR vulnerability where personal data of students and teachers was exposed through unauthenticated URL parameter manipulation. To document this safely in my portfolio, I created this local laboratory environment to simulate the flaw and its detection.
 
