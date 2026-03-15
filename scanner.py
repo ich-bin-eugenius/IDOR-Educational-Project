@@ -6,12 +6,26 @@ init(autoreset=True)
 
 
 def scan_local_lab(start_id, end_id):
+    """
+        Automates IDOR (Insecure Direct Object Reference) testing over a range of IDs.
+
+        Args:
+            start_id (int): The beginning of the ID range to scan.
+            end_id (int): The end of the ID range to scan.
+
+        1. User chooses an environment (Local vs Online).
+        2. Validates the URL structure.
+        3. Iterates through the ID range, sending GET requests.
+        4. Parses HTML to find exposed sensitive data in specific tags.
+    """
+
     print(f"{Fore.RED}Author: Eugene Zavirukha...")
     print(f"{Fore.RED}Date of creating: 14.03.2026\n[!] Created for EDUCATION PURPOSES only [!]\n")
 
     print(f"1. Local\n2. Online")
 
     BASE_URL = ""
+    # Environment choosing logic
     while not BASE_URL:
         choosing_environment = input(": ").strip()
 
@@ -66,6 +80,7 @@ def scan_local_lab(start_id, end_id):
         except Exception as e:
             print(f"{Fore.RED}\n[!] An unexpected error occurred: {e}")
             break
+
 
 if __name__ == "__main__":
     scan_local_lab(1, 10)  # Test ID 1 - 10
