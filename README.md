@@ -1,18 +1,26 @@
 # IDOR Vulnerability Simulation & Security Auditor
 
-This project is a cybersecurity educational lab consisting of a **vulnerable web application** and a **security scanning tool**. It demonstrates the risks of **Insecure Direct Object Reference (IDOR)** and how automated tools can be used for security auditing.
+![example2](img2.png)
+![example1](img1.png)
 
-![example](img1.png)
+This project is a cybersecurity educational lab consisting of a **vulnerable web application** and an **automated security scanning tool**. It is designed to demonstrate the risks of **Insecure Direct Object Reference (IDOR)** and show how automated tools can be used for security auditing.
 
 ## 📖 Background
-I discovered a real-world IDOR vulnerability where personal data of students and teachers was exposed through unauthenticated URL parameter manipulation. To document this safely in my portfolio, I created this local laboratory environment to simulate the flaw and its detection.
+I discovered a real-world IDOR vulnerability where personal data was exposed through unauthenticated URL parameter manipulation. To document this safely in my portfolio, I created this local laboratory environment to simulate the flaw and its detection.
+
+## 🚀 Key Features of the Scanner
+
+- **Environment Selection:** The tool allows the user to choose between a pre-configured **Local Lab** (Flask) or a **Custom Online URL**.
+- **Robust Error Handling:** Includes advanced handling for `Connection Errors`, `Timeouts`, and unexpected server responses to ensure stable auditing.
+- **Deep Content Analysis:** Instead of relying on HTTP status codes, the tool uses `BeautifulSoup` to parse HTML and verify the presence of leaked data (student names).
+- **Validation Logic:** The scanner identifies specific patterns like `<span style="margin-left:2px;">` to distinguish between active data leaks and empty templates.
 
 ## 🛠️ Project Structure
 
-- `app.py`: A Python Flask application simulating a student portal. It contains a deliberate IDOR flaw where user profiles are accessible by changing the `person` ID in the URL without any authorization check.
-- `scanner.py`: An automated security tool that performs "fuzzing" on the ID parameter. It uses `BeautifulSoup` to parse the HTML and confirm if sensitive data (like names) is actually being leaked, filtering out false positives.
+- `app.py`: A Python Flask application simulating a student portal with a deliberate IDOR vulnerability.
+- `scanner.py`: The security auditor tool (the code I developed).
 
-## 🚀 How to Run the Lab
+## 🔍 How to Run the Lab
 
 1. **Install dependencies:**
    ```bash
@@ -21,32 +29,18 @@ Start the vulnerable server:
 
 Bash
 python app.py
-The server will run on https://www.google.com/search?q=http://127.0.0.1:5000
-
 Run the security scanner:
 
 Bash
 python scanner.py
-🔍 Vulnerability Explained
-The flaw exists in how the server handles the person parameter:
-http://127.0.0.1:5000/story.php?person=7235
+Follow the on-screen menu to select the environment and start the scan.
 
-The application retrieves the user data directly from the ID provided by the client without verifying if the requester has the right to see that specific data.
+⚖️ Legal Disclaimer
+FOR EDUCATIONAL USE ONLY. This tool is intended for security researchers and developers to test their own systems. Unauthorized testing of third-party websites is ILLEGAL.
 
-Security Auditor Logic:
-The scanner doesn't just look for a 200 OK response. It performs a content-based validation:
+👤 Author
+Eugene Zavirukha
 
-It targets the specific HTML tag: <span style="margin-left:2px;">
+Created on: 14.03.2026
 
-It verifies if the tag contains a non-empty string.
-
-This distinguishes between a real data leak and a generic "Page Not Found" or "Empty Profile" template.
-
-🛡️ Responsible Disclosure & Ethics
-As a student interested in cybersecurity, I follow White Hat principles. When I found this bug in a real system:
-
-I did not download or leak any private data.
-
-I reported the vulnerability to the vendor immediately.
-
-I used this local simulation to showcase the technical aspect without compromising real-world security.
+Focus: Web Security, Python Automation, and Ethical Hacking
