@@ -45,20 +45,21 @@ def scan_local_lab(start_id, end_id):
         else:
             print(f"{Fore.RED}[!] Invalid choice.")
 
+    results = []
+
     # Main scan cycle
     for uid in range(start_id, end_id + 1):
         try:
-            # *timeout
             res = requests.get(f"{BASE_URL}{uid}", timeout=5)
 
             if res.status_code == 200:
                 soup = BeautifulSoup(res.text, 'html.parser')
-                # Tag of the element
                 name_tag = soup.find('span', style="margin-left:2px;")
                 name = name_tag.get_text(strip=True) if name_tag else ""
 
                 if name:
                     print(f"{Fore.GREEN}[+] Vulnerability IDOR confirmed! ID {uid}: {name}")
+                    results.append(f"{uid} = {name}")
 
                 else:
                     print(f"{Fore.WHITE}[.] ID {uid}: Page is empty or data not found.")
@@ -80,6 +81,24 @@ def scan_local_lab(start_id, end_id):
         except Exception as e:
             print(f"{Fore.RED}\n[!] An unexpected error occurred: {e}")
             break
+
+    if results:
+        save_choice = input(f"\n{Fore.YELLOW}Do you want to save results to a .txt file? (y/n): ").lower()
+        if save_choice == 'y':
+            # Cleaning file name because of Windows
+            clean_filename = BASE_URL.replace("http://", "").replace("https://", "").replace("/", "_").replace("?",
+                                                                                                               "_").replace(
+                "=", "_").replace(":", "_")
+            filename = f"{clean_filename}.txt"
+
+            try:
+                with open(filename, "w", encoding="utf-8") as f:
+                    f.write("\n".join(results))
+                print(f"{Fore.CYAN}[*] Success! Results saved to: {filename}")
+            except Exception as e:
+                print(f"{Fore.RED}[!] Could not save file: {e}")
+    else:
+        print(f"\n{Fore.WHITE} [?] Nothing to save.")
 
 
 if __name__ == "__main__":
