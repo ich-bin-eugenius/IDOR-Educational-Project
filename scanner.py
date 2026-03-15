@@ -59,6 +59,13 @@ def scan_local_lab(start_id, end_id):
             print(f"{Fore.RED}\n[!] Connection Error. Check if the server is running.")
             break
 
+        except requests.exceptions.Timeout:
+            print(f"{Fore.RED}\n[!] Request Timeout at ID {uid}.")
+            continue
+
+        except Exception as e:
+            print(f"{Fore.RED}\n[!] An unexpected error occurred: {e}")
+            break
 
 if __name__ == "__main__":
     scan_local_lab(1, 10)  # Test ID 1 - 10
