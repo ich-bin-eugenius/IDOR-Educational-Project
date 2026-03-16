@@ -17,17 +17,16 @@ def scan_local_lab(start_id, end_id):
         2. Validates the URL structure.
         3. Iterates through the ID range, sending GET requests.
         4. Parses HTML to find exposed sensitive data in specific tags.
+        5. Generates a sanitized .txt report named after the target URL and person range.
     """
 
-    print(f"{Fore.RED}Author: Eugene Zavirukha...")
-    print(f"{Fore.RED}Date of creating: 14.03.2026\n[!] Created for EDUCATION PURPOSES only [!]\n")
-
-    print(f"1. Local\n2. Online")
+    print_banner()
+    print(f"1. Local Lab (127.0.0.1)\n2. Online Target")
 
     BASE_URL = ""
     # Environment choosing logic
     while not BASE_URL:
-        choosing_environment = input(": ").strip()
+        choosing_environment = input(f"{Fore.CYAN}Select environment: ").strip()
 
         if choosing_environment == "1":
             BASE_URL = "http://127.0.0.1:5000/story.php?person="
@@ -44,6 +43,16 @@ def scan_local_lab(start_id, end_id):
                 print(f"{Fore.RED}[!] Error: URL must start with http:// or https://")
         else:
             print(f"{Fore.RED}[!] Invalid choice.")
+
+    # Id range
+    try:
+        start_id = int(input(f"{Fore.CYAN}Start ID: "))
+        end_id = int(input(f"{Fore.CYAN}End ID: "))
+    except ValueError:
+        print(f"{Fore.RED}[!] Invalid ID, using default 1-10.")
+        start_id, end_id = 1, 10
+
+    print(f"\n{Fore.CYAN}[*] Starting audit on range {start_id} to {end_id}...\n")
 
     results = []
 
@@ -89,7 +98,7 @@ def scan_local_lab(start_id, end_id):
             clean_filename = BASE_URL.replace("http://", "").replace("https://", "").replace("/", "_").replace("?",
                                                                                                                "_").replace(
                 "=", "_").replace(":", "_")
-            filename = f"{clean_filename}.txt"
+            filename = f"{clean_filename}{start_id}-{end_id}.txt"
 
             try:
                 with open(filename, "w", encoding="utf-8") as f:
@@ -98,7 +107,22 @@ def scan_local_lab(start_id, end_id):
             except Exception as e:
                 print(f"{Fore.RED}[!] Could not save file: {e}")
     else:
-        print(f"\n{Fore.WHITE} [?] Nothing to save.")
+        print(f"\n{Fore.WHITE}[?] Nothing to save.")
+
+
+def print_banner():
+    banner = f"""{Fore.YELLOW}
+    ███████╗ █████╗ ██╗   ██╗██╗██████╗ ██╗   ██╗██╗  ██╗██╗  ██╗ █████╗ 
+    ╚══███╔╝██╔══██╗██║   ██║██║██╔══██╗██║   ██║██║  ██║██║  ██║██╔══██╗
+      ███╔╝ ███████║██║   ██║██║██████╔╝██║   ██║█████  ║███████║███████║
+     ███╔╝  ██╔══██║╚██╗ ██╔╝██║██╔══██╗██║   ██║██╔██  ║██╔══██║██╔══██║
+    ███████╗██║  ██║ ╚████╔╝ ██║██║  ██║╚██████╔╝██║  ██║██║  ██║██║  ██║
+    ╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝
+    {Fore.RED}          IDOR Auditor v1.2 | Created by Eugene Zavirukha
+    {Fore.RED}          Last update: 16.03.2026
+    {Fore.RED}          [!] Created for EDUCATION PURPOSES only [!]
+    """
+    print(banner)
 
 
 if __name__ == "__main__":
