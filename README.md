@@ -3,15 +3,15 @@
 ## 🖼️ Preview
 
 ### 1. Tool Banner & Interface
-![Banner](img1.png)
+![Banner](static/img1.png)
 *Professional ASCII interface and environment selection.*
 
 ### 2. Scanning in Action
-![Scan](img2.png)
+![Scan](static/img2.png)
 *Real-time vulnerability detection and data extraction with custom range selection.*
 
 ### 3. Generated Report (TXT Output)
-![Report](img3.png)
+![Report](static/img3.png)
 *Automatically generated report showing ID and username correlation.*
 
 ---
