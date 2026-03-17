@@ -1,14 +1,21 @@
 from flask import Flask, render_template_string
+import random
 
 app = Flask(__name__)
 
+
+names = ["Tom", "Bob", "Steve", "King", "Lord", "Voldemort", "Harry", "Roan", "Allison", "Luke", "Paul", "James"]
+second_names = ["Green", "White", "Mclaren", "Black", "Burgers", "Rowling", "Dvorak", "Havel", "Joska", "Czerny"]
+
 # Test Database of users
-users = {
-    1: "User 1",
-    2: "User 2",
-    3: "User 3",
-    6: "User 6"
-}
+users = {1: "admin"}
+
+id_person = 2
+
+for _ in range(10000):
+    full_name = f"{random.choice(names)} {random.choice(second_names)}"
+    users[id_person] = full_name
+    id_person += 1
 
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -34,7 +41,7 @@ def profile():
     uid = flask.request.args.get('person', type=int)
 
     # Vulnerability: No verification, just print the name if it exists
-    name = users.get(uid, "")  # If ID doesn't exist -> name is empty ""
+    name = users.get(uid, "")  # If ID doesn't exist -> name is empty " "
 
     return render_template_string(HTML_TEMPLATE, name=name, uid=uid)
 

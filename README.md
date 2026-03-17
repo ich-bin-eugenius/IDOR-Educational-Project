@@ -1,4 +1,4 @@
-# IDOR Security Auditor (v2.01 - Async Edition)
+# IDOR Security Auditor (v2.1 - Async Edition)
 
 ## 🖼️ Preview
 
