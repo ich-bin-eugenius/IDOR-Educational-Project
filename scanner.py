@@ -6,6 +6,21 @@ import aiohttp
 init(autoreset=True)
 
 
+def print_banner():
+    banner = f"""{Fore.YELLOW}
+    ███████╗ █████╗ ██╗   ██╗██╗██████╗ ██╗   ██╗██╗  ██╗██╗  ██╗ █████╗ 
+    ╚══███╔╝██╔══██╗██║   ██║██║██╔══██╗██║   ██║██║  ██║██║  ██║██╔══██╗
+      ███╔╝ ███████║██║   ██║██║██████╔╝██║   ██║█████║ ║███████║███████║
+     ███╔╝  ██╔══██║╚██╗ ██╔╝██║██╔══██╗██║   ██║██╔██║ ║██╔══██║██╔══██║
+    ███████╗██║  ██║ ╚████╔╝ ██║██║  ██║╚██████╔╝██║  ██║██║  ██║██║  ██║
+    ╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝
+    {Fore.RED}          IDOR Auditor v2.01 | Created by Eugene Zavirukha
+    {Fore.RED}          Last update: 17.03.2026 {Fore.YELLOW}- asyncio - fix bugs
+    {Fore.RED}          [!] Created for EDUCATION PURPOSES only [!]
+    """
+    print(banner)
+
+
 async def main():
     """
         Automates IDOR (Insecure Direct Object Reference) testing over a range of IDs by managing user input,
@@ -34,7 +49,8 @@ async def main():
         if choosing_environment == "1":
             base_url = "http://127.0.0.1:5000/story.php?person="
         elif choosing_environment == "2":
-            user_url = input(f"{Fore.YELLOW}Enter target URL (for example: http://site.com/story.php?person=): ").strip()
+            user_url = input(
+                f"{Fore.YELLOW}Enter target URL (for example: http://site.com/story.php?person=): ").strip()
             if user_url.startswith("http"):
                 base_url = user_url
             else:
@@ -65,9 +81,10 @@ async def main():
         save_choice = input(f"\n{Fore.YELLOW}Save results to .txt? (y/n): ").lower().strip()
         if save_choice == 'y':
             # Cleaning file name because of Windows
-            clean_filename = base_url.replace("http://", "").replace("https://", "").replace("/", "_").replace("?",
-                                                                                                   "_").replace(
-                "=", "_").replace(":", "_")
+            clean_filename = (base_url.replace("http://", "").replace("https://", "").replace("/", "_").replace("?",
+                                                                                                                "_")
+                              .replace(
+                "=", "_").replace(":", "_"))
             filename = f"{clean_filename}{start_id}-{end_id}.txt"
 
             try:
@@ -100,6 +117,10 @@ async def check_id(session, base_url, uid, semaphore):
         - Utilizes BeautifulSoup to locate sensitive data within a specific <span> tag.
         - Handles aiohttp-specific exceptions (ClientConnectorError, TimeoutError) to
           ensure the global scan loop remains uninterrupted.
+          :param uid:
+          :param base_url:
+          :param session:
+          :param semaphore:
         """
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
     async with semaphore:
@@ -127,21 +148,6 @@ async def check_id(session, base_url, uid, semaphore):
         except Exception as e:
             print(f"{Fore.RED}[!] An unexpected error occurred at ID {uid}: {e}")
         return None
-
-
-def print_banner():
-    banner = f"""{Fore.YELLOW}
-    ███████╗ █████╗ ██╗   ██╗██╗██████╗ ██╗   ██╗██╗  ██╗██╗  ██╗ █████╗ 
-    ╚══███╔╝██╔══██╗██║   ██║██║██╔══██╗██║   ██║██║  ██║██║  ██║██╔══██╗
-      ███╔╝ ███████║██║   ██║██║██████╔╝██║   ██║█████║ ║███████║███████║
-     ███╔╝  ██╔══██║╚██╗ ██╔╝██║██╔══██╗██║   ██║██╔██║ ║██╔══██║██╔══██║
-    ███████╗██║  ██║ ╚████╔╝ ██║██║  ██║╚██████╔╝██║  ██║██║  ██║██║  ██║
-    ╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝
-    {Fore.RED}          IDOR Auditor v2.0 | Created by Eugene Zavirukha
-    {Fore.RED}          Last update: 17.03.2026 {Fore.YELLOW}- asyncio
-    {Fore.RED}          [!] Created for EDUCATION PURPOSES only [!]
-    """
-    print(banner)
 
 
 if __name__ == "__main__":
