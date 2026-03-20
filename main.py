@@ -14,7 +14,7 @@ def print_banner():
      ███╔╝  ██╔══██║╚██╗ ██╔╝██║██╔══██╗██║   ██║██╔══██║██╔══██║██╔══██║
     ███████╗██║  ██║ ╚████╔╝ ██║██║  ██║╚██████╔╝██║  ██║██║  ██║██║  ██║
     ╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝
-    {Fore.RED}          IDOR Auditor v2.2 | ...
+    {Fore.RED}          IDOR Auditor v2.3 | ...
     {Fore.RED}          Created by Eugene Zavirukha | Last update: 20.03.2026
     """
     print(banner)
@@ -28,6 +28,7 @@ def show_dashboard(s):
     print(f"4) Semaphore:    {Fore.CYAN}{s['semaphore']} concurrent tasks")
     print(f"5) Format:       {Fore.CYAN}{s['format']}")
     print(f"{Fore.WHITE}{'=' * 50}")
+    print(f"{Fore.GREEN}G) START AUDIT   {Fore.RED}Q) EXIT")
 
 
 async def app():
@@ -69,6 +70,23 @@ async def app():
                 settings["semaphore"] = int(input("Max concurrent tasks: "))
             except ValueError:
                 pass
+
+        elif option == 'g':
+            print(f"\n{Fore.MAGENTA}[*] Audit in progress...")
+            results = await scanner.run_audit(settings)
+
+            if results:
+                path = utils.save_results(results, settings["url"],
+                                         settings["range"][0], settings["range"][1],
+                                         settings["format"])
+                print(f"{Fore.CYAN}[!] Audit complete. Saved to: {path}")
+            else:
+                print(f"{Fore.RED}[!] No data leaked.")
+            input(f"\n{Fore.WHITE}Press Enter to return...")
+
+        elif option == 'q':
+            break
+
 
 if __name__ == "__main__":
     asyncio.run(app())

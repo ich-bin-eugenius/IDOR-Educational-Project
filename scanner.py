@@ -4,9 +4,9 @@ import asyncio
 import aiohttp
 
 
-async def check_id(session, base_url, uid, semaphore):
+async def check_id(session, base_url, uid, semaphore, css_tag):
     """
-        Performs an asynchronous HTTP GET request to verify a specific ID for IDOR vulnerabilities.
+    Performs an asynchronous HTTP GET request with CSS selector-based scraping.
 
         Args:
             session (aiohttp.ClientSession): The active aiohttp session used for network requests.
@@ -36,8 +36,11 @@ async def check_id(session, base_url, uid, semaphore):
                 if res.status == 200:
                     html = await res.text()
                     soup = BeautifulSoup(html, 'html.parser')
-                    name_tag = soup.find('span', style="margin-left:2px;")
-                    name = name_tag.get_text(strip=True) if name_tag else ""
+
+                    # Smart Scraping: uses dynamic CSS selector from settings
+                    target = soup.select_one(css_tag)
+                    name = target.get_text(strip=True) if target else ""
+
                     if name:
                         print(f"{Fore.GREEN}[+] Vulnerability IDOR CONFIRMED! ID {uid}: {name}")
                         return f"{uid} = {name}"
@@ -55,3 +58,18 @@ async def check_id(session, base_url, uid, semaphore):
         except Exception as e:
             print(f"{Fore.RED}[!] An unexpected error occurred at ID {uid}: {e}")
         return None
+
+
+async def run_audit(settings):
+    """
+    Manages the lifecycle of the asynchronous scan.
+    """
+    semaphore = asyncio.Semaphore(settings["semaphore"])
+    start_id, end_id = settings["range"]
+
+    async with aiohttp.ClientSession() as session:
+        tasks = [check_id(session, settings["url"], uid, semaphore, settings["tag"])
+                 for uid in range(start_id, end_id + 1)]
+        results_raw = await asyncio.gather(*tasks)
+
+    return [r for r in results_raw if r is not None]
