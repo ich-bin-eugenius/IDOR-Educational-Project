@@ -2,7 +2,6 @@ import re
 
 
 def sanitize_filename(url):
-    """Cleans URL to create a safe Windows/Linux/... filename."""
     # Cleaning file name because of Windows
     clean = re.sub(r'https?://', '', url)
     clean = re.sub(r'[\\/*?:"<>|.=]', '_', clean)
@@ -10,7 +9,6 @@ def sanitize_filename(url):
 
 
 def save_results(results, base_url, start_id, end_id, file_format=".txt"):
-    """Saves findings based on selected format."""
     filename = f"report_{sanitize_filename(base_url)}_{start_id}-{end_id}{file_format}"
 
     try:
