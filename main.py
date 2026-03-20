@@ -14,7 +14,7 @@ def print_banner():
      ███╔╝  ██╔══██║╚██╗ ██╔╝██║██╔══██╗██║   ██║██╔══██║██╔══██║██╔══██║
     ███████╗██║  ██║ ╚████╔╝ ██║██║  ██║╚██████╔╝██║  ██║██║  ██║██║  ██║
     ╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝
-    {Fore.RED}          IDOR Auditor v2.3 | ...
+    {Fore.RED}          IDOR Auditor v3.1 | Improved tool: interface - fix bugs 
     {Fore.RED}          Created by Eugene Zavirukha | Last update: 20.03.2026
     """
     print(banner)
@@ -28,7 +28,7 @@ def show_dashboard(s):
     print(f"4) Semaphore:    {Fore.CYAN}{s['semaphore']} concurrent tasks")
     print(f"5) Format:       {Fore.CYAN}{s['format']}")
     print(f"{Fore.WHITE}{'=' * 50}")
-    print(f"{Fore.GREEN}G) START AUDIT   {Fore.RED}Q) EXIT")
+    print(f"{Fore.GREEN}0) START AUDIT   {Fore.RED}99) EXIT")
 
 
 async def app():
@@ -38,6 +38,13 @@ async def app():
         "range": [1, 50],
         "semaphore": 10,
         "format": ".txt"
+    }
+
+    often_used_tags = {
+        "1": ("span[style*='margin-left:2px']", "For this Lab (Default)"),
+        "2": ("h1", "Main Heading"),
+        "3": (".user-profile", "Common Profile Class"),
+        "4": ("#username", "Specific ID Selector")
     }
 
     print_banner()
@@ -54,8 +61,16 @@ async def app():
                 target = input("Enter target URL: ").strip()
                 if target.startswith("http"): settings["url"] = target
 
-        elif option == '2':
-            settings["tag"] = input("Enter CSS Selector (for example: .user-name): ")
+        if option == '2':
+            print("\n--- Select Target Pattern ---")
+
+            for key, (selector, desc) in often_used_tags.items():
+                print(f"{key}) {desc} -> {Fore.CYAN}{selector}")
+            sub_choice = input("\nChoose preset (or type manual): ").strip()
+            if sub_choice in often_used_tags:
+                settings["tag"] = often_used_tags[sub_choice][0]
+            else:
+                settings["tag"] = sub_choice
 
         elif option == '3':
             try:
@@ -71,20 +86,21 @@ async def app():
             except ValueError:
                 pass
 
-        elif option == 'g':
+        elif option == '0':
             print(f"\n{Fore.MAGENTA}[*] Audit in progress...")
             results = await scanner.run_audit(settings)
 
             if results:
                 path = utils.save_results(results, settings["url"],
-                                         settings["range"][0], settings["range"][1],
-                                         settings["format"])
+                                          settings["range"][0], settings["range"][1],
+                                          settings["format"])
                 print(f"{Fore.CYAN}[!] Audit complete. Saved to: {path}")
             else:
                 print(f"{Fore.RED}[!] No data leaked.")
             input(f"\n{Fore.WHITE}Press Enter to return...")
 
-        elif option == 'q':
+        elif option == '99':
+            print("Bye, thanks for downloading :)")
             break
 
 

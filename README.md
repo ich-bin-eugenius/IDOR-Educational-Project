@@ -1,47 +1,65 @@
-# IDOR Security Auditor (v2.1 - Async Edition)
-
-## 🖼️ Preview
+# IDOR Auditor v3.1 (Improved interface for user)
+## Preview
 
 ### 1. Tool Banner & Interface
-![Banner](static/img1.png)
-*Updated professional ASCII interface with environment and range selection.*
+![Banner](static/preview.png)
 
 ### 2. High-Speed Asynchronous Scanning
-![Scan](static/img2.png)
-*Concurrent vulnerability detection using asyncio and semaphores for optimized performance.*
+![Scan](static/in_work.png)
 
-### 3. Generated Report (TXT Output)
-![Report](static/img3.png)
-*Sanitized report showing ID and username correlation, now including scan range in filename.*
+### 3. Settings
+![Settings](static/changing_values.png)
 
----
+### 4. Saving as .txt
+![Report](static/saving-txt.png)
 
-## 📖 Project Overview
-This project is a cybersecurity educational lab consisting of a **vulnerable web application** and a **high-performance security auditing tool**. It demonstrates the risks of **Insecure Direct Object Reference (IDOR)**—a critical vulnerability where an application provides direct access to objects based on user-supplied input without proper authorization.
+### 5. Generated Report (TXT Output)
+![Report](static/output.png)
 
-The tool has been recently upgraded from a synchronous model to a fully **asynchronous engine**, allowing for rapid security audits without sacrificing system stability.
 
-## 🚀 Key Features
+1. Interactive Dashboard (CLI)
+The new centralized control panel for real-time configuration and audit management.
 
-- **Asynchronous Engine:** Powered by `asyncio` and `aiohttp` for concurrent request handling.
-- **Smart Rate Limiting:** Implements `asyncio.Semaphore` to limit concurrent connections, ensuring the target server remains stable during audits.
-- **Persistent Sessions:** Utilizes `aiohttp.ClientSession` for connection pooling, significantly reducing overhead.
-- **Dynamic Scoping:** Users define custom `Start ID` and `End ID` ranges at runtime.
-- **Heuristic DOM Parsing:** Uses `BeautifulSoup4` to verify sensitive data presence, effectively filtering out false positives and empty pages.
-- **Professional CLI:** Color-coded feedback and a refined ASCII banner for a clear auditing experience.
+2. Smart Scraping & Async Engine
+Asynchronous execution with semaphore-based rate limiting and CSS selector-based data extraction.
 
-## 🛠️ Technical Stack
-- **Python 3.10+**
-- **Aiohttp:** For high-speed asynchronous HTTP communication.
-- **Asyncio:** For managing concurrent task execution and rate limiting.
-- **BeautifulSoup4:** For advanced HTML structure analysis.
-- **Colorama:** For cross-platform terminal styling.
-- **Flask:** For the vulnerable web application simulation.
+Project Overview
+IDOR Auditor v3.1 is a high-performance security auditing tool designed to identify Insecure Direct Object Reference (IDOR) vulnerabilities. Unlike basic scripts, v3.1 is built on a Modular Architecture, separating the User Interface, the Scanning Engine, and Utility functions.
 
-## 📁 Project Structure
-- `app.py`: The vulnerable portal simulation (Flask).
-- `scanner.py`: The asynchronous auditing engine.
-- `requirements.txt`: Updated list of necessary Python libraries.
+This version introduces Smart Scraping, allowing researchers to target specific data points using CSS selectors, making it adaptable to any web environment.
+
+Key Features (v3.1)
+Modular Architecture: Clean separation of concerns (main.py, new_scanner.py, utils.py).
+
+Interactive Dashboard: Configure targets, ranges, and performance settings without touching the code.
+
+Smart Scraping (CSS Selectors): Target specific HTML elements (e.g., span.user-name or div#profile).
+
+Asynchronous Core: Powered by asyncio and aiohttp for maximum efficiency.
+
+Traffic Shaping: Integrated Semaphore to prevent server-side Rate Limiting or DoS conditions.
+
+Robust Reporting: Automated report generation with URL-sanitized filenames.
+
+Technical Stack
+Python 3.10+
+
+Aiohttp & Asyncio: High-speed concurrent networking.
+
+BeautifulSoup4: Advanced DOM parsing and data extraction.
+
+Colorama: Professional terminal styling and feedback.
+
+Regex (re): Intelligent filename sanitization and URL processing.
+
+Project Structure
+.
+├── app.py           # Vulnerable Flask Lab
+├── main.py          # Dashboard & CLI logic
+├── scanner.py       # Async Engine
+├── utils.py         # Helper functions
+├── requirements.txt # Dependencies
+└── README.md        # Documentation
 
 ## 🔍 How to Run the Lab
 
@@ -60,15 +78,15 @@ The tool has been recently upgraded from a synchronous model to a fully **asynch
 
 4. **Run the security scanner:**
    ```bash
-   python scanner.py
+   python main.py
 
 
 ⚖️ Legal & Ethical Notice
 FOR EDUCATIONAL PURPOSES ONLY. This tool is intended for security researchers and developers to test their own systems. Unauthorized testing of third-party websites is illegal. The author is a 14-year-old student practicing ethical hacking and responsible disclosure.
 
-👤 Author
+Author
 Eugene Zavirukha
 
-Date: 17.03.2026
+Date: 20.03.2026
 
 Focus: Web Security, Asynchronous Python Automation, and Security Auditing
