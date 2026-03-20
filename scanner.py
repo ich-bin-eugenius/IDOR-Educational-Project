@@ -1,100 +1,7 @@
 from bs4 import BeautifulSoup
-from colorama import Fore, init
+from colorama import Fore
 import asyncio
 import aiohttp
-
-init(autoreset=True)
-
-
-def print_banner():
-    banner = f"""{Fore.YELLOW}
-    ███████╗ █████╗ ██╗   ██╗██╗██████╗ ██╗   ██╗██╗  ██╗██╗  ██╗ █████╗ 
-    ╚══███╔╝██╔══██╗██║   ██║██║██╔══██╗██║   ██║██║  ██║██║  ██║██╔══██╗
-      ███╔╝ ███████║██║   ██║██║██████╔╝██║   ██║█████║ ║███████║███████║
-     ███╔╝  ██╔══██║╚██╗ ██╔╝██║██╔══██╗██║   ██║██╔══██║██╔══██║██╔══██║
-    ███████╗██║  ██║ ╚████╔╝ ██║██║  ██║╚██████╔╝██║  ██║██║  ██║██║  ██║
-    ╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝
-    {Fore.RED}          IDOR Auditor v2.1 | Created by Eugene Zavirukha
-    {Fore.RED}          Last update: 17.03.2026 {Fore.YELLOW}- asyncio - fix bugs
-    {Fore.RED}          [!] Created for EDUCATION PURPOSES only [!]
-    """
-    print(banner)
-
-
-async def main():
-    """
-        Automates IDOR (Insecure Direct Object Reference) testing over a range of IDs by managing user input,
-        environment setup, and asynchronous execution...
-
-        1. User chooses an environment (Local vs Online).
-        2. Validates the URL structure.
-        3. Initializes a persistent aiohttp.ClientSession for optimized connection pooling.
-        4. Dispatches concurrent 'check_id' tasks and aggregates the results using asyncio.gather.
-        5. Generates a sanitized .txt report named after the target URL and person range.
-
-        Raises:
-            ValueError: If non-integer values are provided for ID range boundaries.
-            Exception: Captures and logs errors during the file-writing process.
-        """
-    semaphore = asyncio.Semaphore(10)
-
-    print_banner()
-    print(f"1. Local Lab (127.0.0.1)\n2. Online Target")
-
-    base_url = ""
-    # Environment selection
-    while not base_url:
-        choosing_environment = input(f"{Fore.CYAN}Select environment: ").strip()
-
-        if choosing_environment == "1":
-            base_url = "http://127.0.0.1:5000/story.php?person="
-        elif choosing_environment == "2":
-            user_url = input(
-                f"{Fore.YELLOW}Enter target URL (for example: http://site.com/story.php?person=): ").strip()
-            if user_url.startswith("http"):
-                base_url = user_url
-            else:
-                print(f"{Fore.RED}[!] URL must start with http:// or https://")
-        else:
-            print(f"{Fore.RED}[!] Invalid choice.")
-
-    # Id range
-    try:
-        start_id = int(input(f"{Fore.CYAN}Start ID: "))
-        end_id = int(input(f"{Fore.CYAN}End ID: "))
-    except ValueError:
-        print(f"{Fore.RED}[!] Invalid ID, using default 1-10.")
-        start_id, end_id = 1, 10
-
-    print(f"\n{Fore.CYAN}[*] Starting audit on range {start_id} to {end_id}...\n")
-
-    # Async execution
-    async with aiohttp.ClientSession() as session:
-        tasks = [check_id(session, base_url, uid, semaphore) for uid in range(start_id, end_id + 1)]
-        results_raw = await asyncio.gather(*tasks)
-
-    # Filter out None results
-    results = [r for r in results_raw if r is not None]
-
-    # Saving logic
-    if results:
-        save_choice = input(f"\n{Fore.YELLOW}Save results to .txt? (y/n): ").lower().strip()
-        if save_choice == 'y':
-            # Cleaning file name because of Windows
-            clean_filename = (base_url.replace("http://", "").replace("https://", "").replace("/", "_").replace("?",
-                                                                                                                "_")
-                              .replace(
-                "=", "_").replace(":", "_"))
-            filename = f"{clean_filename}{start_id}-{end_id}.txt"
-
-            try:
-                with open(filename, "w", encoding="utf-8") as f:
-                    f.write("\n".join(results))
-                print(f"{Fore.CYAN}[*] Saved to: {filename}")
-            except Exception as e:
-                print(f"{Fore.RED}[!] Save failed: {e}")
-    else:
-        print(f"\n{Fore.WHITE}[?] No vulnerabilities found to save.")
 
 
 async def check_id(session, base_url, uid, semaphore):
@@ -148,7 +55,3 @@ async def check_id(session, base_url, uid, semaphore):
         except Exception as e:
             print(f"{Fore.RED}[!] An unexpected error occurred at ID {uid}: {e}")
         return None
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
