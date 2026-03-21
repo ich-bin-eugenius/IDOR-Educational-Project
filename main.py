@@ -1,3 +1,6 @@
+# (c) 2026 Eugene Zavirukha
+# Licensed under the Apache License, Version 2.0
+
 import asyncio
 from colorama import Fore, init
 import scanner
@@ -15,7 +18,7 @@ def print_banner():
     ███████╗██║  ██║ ╚████╔╝ ██║██║  ██║╚██████╔╝██║  ██║██║  ██║██║  ██║
     ╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝
     {Fore.RED}          IDOR Auditor v3.1 | Improved tool: interface - fix bugs 
-    {Fore.RED}          Created by Eugene Zavirukha | Last update: 20.03.2026
+    {Fore.RED}          Created by Eugene Zavirukha | Last update: 21.03.2026
     """
     print(banner)
 

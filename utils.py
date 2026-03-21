@@ -1,3 +1,6 @@
+# (c) 2026 Eugene Zavirukha
+# Licensed under the Apache License, Version 2.0
+
 import re
 
 
